@@ -8,14 +8,14 @@ df = df.drop(columns = ["company_name"])
 
 # 1. DATA PREPROCESSING
 
-# 1.1 Data Cleaning
+# Data Cleaning
 
 missing_values = df.isnull().sum()
 # print("\nMissing values per column:\n", missing_values)
 duplicates = df.duplicated().sum()
 # print("\nDuplicates in the dataset:", duplicates)
 
-# 1.2 Feature Encoding (Binary Encoding)
+# Feature Encoding (Binary Encoding)
 
 # print("\nLabels in the dataset:", df["status_label"].unique()) 
 df["status_encoding"] = df["status_label"].map({"alive": 0, "failed": 1})
@@ -23,7 +23,13 @@ df["status_encoding"] = df["status_encoding"].astype(int)
 df = df.drop(columns = ["status_label"])
 # print(df.head(10))
 
-# 1.3 Data Scaling/Standardization
+"""
+
+YOUR CODE GOES HERE!!! (Data scaling/standardization comes last.)
+
+"""
+
+# Data Scaling/Standardization
 
 scaler = StandardScaler()
 
