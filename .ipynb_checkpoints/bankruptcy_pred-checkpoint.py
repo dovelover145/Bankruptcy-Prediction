@@ -7,24 +7,23 @@ from matplotlib import pyplot as plt
 
 df = pd.read_csv("american_bankruptcy.csv")
 df = df.drop(columns = ["company_name"])
-df = df.drop(columns = ["year"])
 
 # 1. DATA PREPROCESSING
 
 # Data Cleaning
 
 missing_values = df.isnull().sum()
-print("\nMissing values per column:\n", missing_values)
+# print("\nMissing values per column:\n", missing_values)
 duplicates = df.duplicated().sum()
-print("\nDuplicates in the dataset:", duplicates)
+# print("\nDuplicates in the dataset:", duplicates)
 
 # Feature Encoding (Binary Encoding)
 
-print("\nLabels in the dataset:", df["status_label"].unique()) 
+# print("\nLabels in the dataset:", df["status_label"].unique()) 
 df["status_encoding"] = df["status_label"].map({"alive": 0, "failed": 1})
 df["status_encoding"] = df["status_encoding"].astype(int)
 df = df.drop(columns = ["status_label"])
-print(df.head(10))
+# print(df.head(10))
 
 """
 
@@ -46,37 +45,4 @@ X_test_scaled = scaler.transform(X_test)
 train_scaled = pd.concat([pd.DataFrame(X_train_scaled, columns = X.columns), pd.DataFrame(y_train.reset_index(drop = True), columns = ["status_encoding"])], axis = 1)
 test_scaled = pd.concat([pd.DataFrame(X_test_scaled, columns = X.columns), pd.DataFrame(y_test.reset_index(drop = True), columns = ["status_encoding"])], axis = 1)
 df_scaled = pd.concat([train_scaled, test_scaled], axis = 0)
-print(df_scaled.head(10))
-
-fig, axes = plt.subplots(6, 3, figsize = (15, 18))
-i = 0
-j = 0
-
-for column in df_scaled.columns[:-1]:
-    sns.boxplot(x = "status_encoding", y = column, data = df_scaled, ax = axes[i, j])
-    axes[i, j].set_title(f"Box Plot of {column} (Norm.)")
-    axes[i, j].set_xlabel("Bankruptcy Status")
-    axes[i, j].set_ylabel(f"{column} (Norm.)")
-    j += 1
-    if j == 3:
-        i += 1
-        j = 0
-plt.tight_layout()
-plt.show()
-
-print("\n\n\n\n")
-
-fig, axes = plt.subplots(6, 3, figsize = (15, 18))
-i = 0
-j = 0
-for column in df_scaled.columns[:-1]:
-    sns.violinplot(x = "status_encoding", y = column, data = df, ax = axes[i, j])
-    axes[i, j].set_title(f"Violin Plot of {column} (Norm.)")
-    axes[i, j].set_xlabel("Bankruptcy Status")
-    axes[i, j].set_ylabel(f"{column} (Norm.)")
-    j += 1
-    if j == 3:
-        i += 1
-        j = 0
-plt.tight_layout()
-plt.show()
+## print(df_scaled.head(10))
