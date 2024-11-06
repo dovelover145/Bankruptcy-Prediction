@@ -1,7 +1,9 @@
+
 import math
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import math
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from matplotlib import pyplot as plt
@@ -29,15 +31,28 @@ print(df.head(10))
 
 # 2. EDA
 
-"""
+features_to_plot = df.columns
 
-YOUR CODE GOES HERE!!! Have each separate topic in its own cell.
+for feature in features_to_plot:
+  Q1 = df[feature].quantile(0.25)
+  Q2 = df[feature].quantile(0.50)
+  Q3 = df[feature].quantile(0.75)
+  IQR = Q3- Q1
+  lowerBound = Q1 - 1.5 * IQR
+  upperBound = Q3 + 1.5 * IQR
+  df[feature] = df[feature].clip(lower=lowerBound, upper=upperBound)
 
-1. Feature selection (with a heatmap and correlation analysis)
-2. Data normalization (with log, inverse, and square transformations and their respective plots)
-3. Outlier detection (with box-plots, and outlier detection algorithms potentially)
+num_features = len(features_to_plot)
+num_cols = 3
+num_rows = math.ceil(num_features / num_cols)
 
-"""
+plt.figure(figsize=(12, 2 * num_rows))
+for i, feature in enumerate(features_to_plot, 1):
+    plt.subplot(num_rows, num_cols, i)
+    sns.boxplot(x=df[feature])
+
+plt.tight_layout()
+plt.show()
 
 # Data Scaling/Standardization
 
