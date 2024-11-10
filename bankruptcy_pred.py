@@ -5,10 +5,15 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from matplotlib import pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import GridSearchCV
+# from google.colab import drive
 
 df = pd.read_csv("american_bankruptcy.csv")
-df = df.drop(columns=["company_name"])
-df = df.drop(columns=["year"])
+df = df.drop(columns = ["company_name"])
+df = df.drop(columns = ["year"])
+print(df.head(10))
 
 # 1. DATA PREPROCESSING
 
@@ -29,7 +34,7 @@ print(df.head(10))
 
 # 2. EDA
 
-features_to_plot = df.columns
+features_to_plot = df.columns[df.columns != "status_encoding"]
 
 for feature in features_to_plot:
   Q1 = df[feature].quantile(0.25)
@@ -69,7 +74,7 @@ print(df_scaled.head(10))
 
 print("\n\n\n\n")
 
-diagram_columns = 4 # Can be adjusted to make all of the graphs fit perfectly depending on the number of selected attribute columns
+diagram_columns = 3 # Can be adjusted to make all of the graphs fit perfectly depending on the number of selected attribute columns
 attribute_columns = df_scaled.shape[1] - 1 # Remember to disregard the target column, "status_encoding", as it is not one of our attribute columns
 diagram_rows = math.ceil(attribute_columns / diagram_columns) # Find the maximum number of rows in our diagram to fit every attribute's plot
 
@@ -104,3 +109,30 @@ for column in df_scaled.columns[:-1]:
         column_index = 0
 plt.tight_layout()
 plt.show()
+
+# Applying the Logistic Regression Model
+
+param_grid = {
+    'penalty': ['l1', 'l2'], # L1 and L2 regularization 
+    'C': [0.01, 0.1, 1, 10, 100], # C is 1 / lambda (i.e. the inverse of the regularization parameter)
+    'max_iter': [100, 200, 300, 400] # The maximum number of iterations, which is similar, but not analogous to epochs
+}
+
+model = LogisticRegression(solver='liblinear')
+
+grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=3)
+
+grid_result = grid.fit(X_train_scaled, y_train)
+
+best_params = grid_result.best_params_
+best_score = grid_result.best_score_
+
+print("The Best Model's Hyper-Parameters: ", best_params)
+print("Accuracy of the Best Model on the Training Data: {:f}%".format(best_score * 100))
+
+best_model = LogisticRegression(penalty=best_params['penalty'], C=best_params['C'], solver='liblinear', max_iter=best_params['max_iter'])
+history = best_model.fit(X_train_scaled, y_train) # Can use history for plotting useful graphs
+y_pred = best_model.predict(X_test_scaled)
+# y_pred = grid.predict(X_test_scaled)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy of the Best Model on the Testing Data: {accuracy}")
